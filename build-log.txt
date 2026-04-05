@@ -1,0 +1,56 @@
+
+> fullstack-client-dashboard@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.2 (Turbopack)
+- Environments: .env.local
+
+ÔÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 32.6s
+  Running TypeScript ...
+  Finished TypeScript in 17.1s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/22) ...
+  Generating static pages using 11 workers (5/22) 
+  Generating static pages using 11 workers (10/22) 
+  Generating static pages using 11 workers (16/22) 
+Ô£ô Generating static pages using 11 workers (22/22) in 3.1s
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî ãÆ /
+Ôö£ Ôùï /_not-found
+Ôö£ ãÆ /api/clients
+Ôö£ ãÆ /api/clients/[id]
+Ôö£ ãÆ /api/invoices
+Ôö£ ãÆ /api/invoices/[id]
+Ôö£ ãÆ /api/orders
+Ôö£ ãÆ /api/orders/[id]
+Ôö£ ãÆ /api/timers
+Ôö£ ãÆ /api/timers/[id]
+Ôö£ ãÆ /billing
+Ôö£ ãÆ /billing/[id]
+Ôö£ Ôùï /billing/new
+Ôö£ ãÆ /clients
+Ôö£ ãÆ /clients/[id]
+Ôö£ Ôùï /clients/new
+Ôö£ Ôùï /landing
+Ôö£ Ôùï /login
+Ôö£ ãÆ /orders
+Ôö£ ãÆ /orders/[id]
+Ôö£ Ôùï /orders/new
+Ôö£ Ôùï /settings
+Ôö£ Ôùï /settings/billing
+Ôö£ Ôùï /settings/notifications
+Ôö£ Ôùï /settings/security
+Ôö£ ãÆ /timers
+Ôö£ ãÆ /timers/[id]
+Ôöö Ôùï /timers/new
+
+
+ãÆ Proxy (Middleware)
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+
