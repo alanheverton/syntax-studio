@@ -1,8 +1,23 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { invoiceSchema, getZodErrorMessages } from "@/lib/schemas";
+
+async function requireAuth(supabase: SupabaseClient) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return null;
+  }
+  return user;
+}
 
 export async function GET() {
   const supabase = await createClient();
+  const user = await requireAuth(supabase);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { data: invoices, error } = await supabase
     .from('invoices')
     .select('*')
@@ -15,15 +30,30 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const user = await requireAuth(supabase);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
+
+    // Validate input against schema
+    const validated = invoiceSchema.safeParse(body);
+    if (!validated.success) {
+      return NextResponse.json(
+        { error: getZodErrorMessages(validated.error).join(', ') },
+        { status: 400 }
+      );
+    }
+
     const newInvoice = {
       ...body,
       id: `inv_${Date.now()}`,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     };
-    
-    const supabase = await createClient();
+
     const { data, error } = await supabase
       .from('invoices')
       .insert(newInvoice)
@@ -31,7 +61,7 @@ export async function POST(request: Request) {
       .single();
 
     if (error) throw error;
-    
+
     return NextResponse.json({ success: true, invoice: data }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Invalid payload" }, { status: 400 });

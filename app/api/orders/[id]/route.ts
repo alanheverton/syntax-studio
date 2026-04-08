@@ -1,11 +1,26 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { orderUpdateSchema, getZodErrorMessages } from "@/lib/schemas";
+
+async function requireAuth(supabase: SupabaseClient) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return null;
+  }
+  return user;
+}
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const supabase = await createClient();
+  const user = await requireAuth(supabase);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  
-  const supabase = await createClient();
+
   const { data: order, error } = await supabase
     .from('orders')
     .select('*')
@@ -19,22 +34,36 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const supabase = await createClient();
+  const user = await requireAuth(supabase);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  
+
   try {
      const body = await request.json();
-     const supabase = await createClient();
-     
+
+     // Validate input against schema
+     const validated = orderUpdateSchema.safeParse(body);
+     if (!validated.success) {
+       return NextResponse.json(
+         { error: getZodErrorMessages(validated.error).join(', ') },
+         { status: 400 }
+       );
+     }
+
      const { data, error } = await supabase
        .from('orders')
        .update(body)
        .eq('id', id)
        .select()
        .single();
-       
+
      if (error) throw error;
-     
+
      return NextResponse.json({ success: true, order: data });
   } catch (error: any) {
      return NextResponse.json({ error: error.message || "Update Failed" }, { status: 400 });
@@ -42,15 +71,20 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const supabase = await createClient();
+  const user = await requireAuth(supabase);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  
-  const supabase = await createClient();
+
   const { error } = await supabase
     .from('orders')
     .delete()
     .eq('id', id);
-    
+
   if (!error) {
     return NextResponse.json({ success: true });
   }
