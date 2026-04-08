@@ -25,6 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     .from('orders')
     .select('*')
     .eq('id', id)
+    .eq('user_id', user.id)
     .single();
   
   if (order) {
@@ -59,6 +60,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
        .from('orders')
        .update(body)
        .eq('id', id)
+       .eq('user_id', user.id)
        .select()
        .single();
 
@@ -66,7 +68,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
      return NextResponse.json({ success: true, order: data });
   } catch (error: any) {
-     return NextResponse.json({ error: error.message || "Update Failed" }, { status: 400 });
+     console.error("Order update failed:", error);
+     return NextResponse.json({ error: "An error occurred while updating the order. Please try again." }, { status: 500 });
   }
 }
 
@@ -83,7 +86,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const { error } = await supabase
     .from('orders')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', user.id);
 
   if (!error) {
     return NextResponse.json({ success: true });

@@ -21,6 +21,7 @@ export async function GET() {
   const { data: timers, error } = await supabase
     .from('timers')
     .select('*')
+    .eq('user_id', user.id)
     .order('createdAt', { ascending: false });
 
   if (error) {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
 
     const newTimer = {
       ...body,
+      user_id: user.id,
       id: `tim_${Date.now()}`,
       time: "00:00:00",
       seconds: 0,
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, timer: data }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Invalid payload" }, { status: 400 });
+    console.error("Timer creation failed:", error);
+    return NextResponse.json({ error: "An error occurred while creating the timer. Please try again." }, { status: 500 });
   }
 }

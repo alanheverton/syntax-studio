@@ -3,9 +3,12 @@ import DashboardClient from "./DashboardClient";
 
 export default async function DashboardRoute() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   const { data: orders } = await supabase
     .from('orders')
     .select('*')
+    .eq('user_id', user?.id)
     .order('createdAt', { ascending: false });
 
   const stats = {

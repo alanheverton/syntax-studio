@@ -21,6 +21,7 @@ export async function GET() {
   const { data: invoices, error } = await supabase
     .from('invoices')
     .select('*')
+    .eq('user_id', user.id)
     .order('date', { ascending: false });
 
   if (error) {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
 
     const newInvoice = {
       ...body,
+      user_id: user.id,
       id: `inv_${Date.now()}`,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     };
@@ -64,6 +66,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, invoice: data }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Invalid payload" }, { status: 400 });
+    console.error("Invoice creation failed:", error);
+    return NextResponse.json({ error: "An error occurred while creating the invoice. Please try again." }, { status: 500 });
   }
 }

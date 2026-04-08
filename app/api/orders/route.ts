@@ -21,6 +21,7 @@ export async function GET() {
   const { data: orders, error } = await supabase
     .from('orders')
     .select('*')
+    .eq('user_id', user.id)
     .order('createdAt', { ascending: false });
 
   if (error) {
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
 
     const newOrder = {
       ...body,
+      user_id: user.id,
       id: `ord_${Math.random().toString(36).substr(2, 9)}`,
       status: "Pending",
       createdAt: new Date().toISOString()
@@ -73,6 +75,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, order: data }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Invalid payload" }, { status: 400 });
+    console.error("Order creation failed:", error);
+    return NextResponse.json({ error: "An error occurred while creating the order. Please try again." }, { status: 500 });
   }
 }

@@ -21,6 +21,7 @@ export async function GET() {
   const { data: clients, error } = await supabase
     .from('clients')
     .select('*')
+    .eq('user_id', user.id)
     .order('createdAt', { ascending: false });
 
   if (error) {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
 
     const newClient = {
       ...body,
+      user_id: user.id,
       id: `cli_${Date.now()}`,
       createdAt: new Date().toISOString()
     };
@@ -64,6 +66,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, client: data }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Invalid payload" }, { status: 400 });
+    console.error("Client creation failed:", error);
+    return NextResponse.json({ error: "An error occurred while creating the client. Please try again." }, { status: 500 });
   }
 }

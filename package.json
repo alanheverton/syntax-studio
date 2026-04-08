@@ -11,6 +11,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "lucide-react": "^1.7.0",
     "next": "15.5.14",
     "react": "19.0.0",
@@ -26,7 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.14",
-    "netlify-cli": "^24.9.0",
+    "netlify-cli": "^24.10.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "webpack": "^5.105.4"
